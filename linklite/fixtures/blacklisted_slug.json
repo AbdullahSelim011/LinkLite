@@ -1,0 +1,16 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Blacklisted Slug",
+  "modified": "2025-03-30 12:00:04.145739",
+  "name": "apps",
+  "slug": "apps"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Blacklisted Slug",
+  "modified": "2025-03-30 12:03:13.859458",
+  "name": "app",
+  "slug": "app"
+ }
+]

@@ -1,0 +1,27 @@
+{
+  "name": "frappe-ui-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --base=/assets/linklite/frontend/ && yarn copy-html-entry",
+    "copy-html-entry": "cp ../linklite/public/frontend/index.html ../linklite/www/links.html"
+  },
+  "dependencies": {
+    "feather-icons": "^4.29.2",
+    "frappe-ui": "^0.1.175",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
+    "vue-sonner": "^1.3.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.1",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.10"
+  }
+}
