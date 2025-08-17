@@ -33,7 +33,6 @@ const globalComponents = {
 }
 
 const app = createApp(App)
-
 setConfig("resourceFetcher", frappeRequest)
 
 app.use(router)

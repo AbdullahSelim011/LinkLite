@@ -9,14 +9,34 @@ const routes = [
     component: () => import('@/pages/Home.vue'),
   },
   {
-	path: '/analytics',
-	name: 'Analytics',
-	component: () => import('@/pages/Analytics.vue'),
+	path: '/driver',
+	name: 'Driver',
+	component: () => import('@/pages/Driver.vue'),
   },
   {
     path: '/deliverytrip',
     name: 'DeliveryTrip',
     component: () => import('@/pages/DeliveryTrip.vue'),
+  },
+  {
+    path: '/customer',
+    name: 'Customer',
+    component: () => import('@/pages/Customer.vue'),
+  },
+  {
+    path: '/salesinvoice',
+    name: 'SalesInvoice',
+    component: () => import('@/pages/SalesInvoice.vue'),
+  },
+  {
+    path: '/vehicle',
+    name: 'Vehicle',
+    component: () => import('@/pages/Vehicle.vue'),
+  },
+  {
+    path: '/address',
+    name: 'Address',
+    component: () => import('@/pages/Address.vue'),
   }
 ]
 
@@ -34,7 +54,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.name === 'Login' && isLoggedIn) {
-    next({ name: 'Home' })
+    next({ name: '/Home' })
   } else if (to.name !== 'Login' && !isLoggedIn) {
     window.location.href = "/login"
   } else {

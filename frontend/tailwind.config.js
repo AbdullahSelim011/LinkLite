@@ -8,7 +8,12 @@ export default {
 		"./node_modules/frappe-ui/src/components/**/*.{vue,js,ts,jsx,tsx}",
 	],
 	theme: {
-		extend: {},
+		extend: {
+			fontFamily: {
+				// أضف 'Tajawal' كخط مخصص
+				tajawal: ['Tajawal', 'sans-serif'],
+			  },
+		},
 	},
 	plugins: [],
 }
