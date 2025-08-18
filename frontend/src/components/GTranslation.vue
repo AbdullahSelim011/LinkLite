@@ -1,9 +1,9 @@
-<script setup lang="ts">
+<script setup>
 import { onMounted } from 'vue';
 
 onMounted(() => {
     // Set the GTranslate settings
-    (window as any).gtranslateSettings = {
+    (window).gtranslateSettings = {
         wrapper_selector: ".gtranslate_wrapper",
         native_language_names: true,
         languages: ["ar", "en", "fr"],
