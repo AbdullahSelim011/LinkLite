@@ -206,7 +206,7 @@
                   label="عرض"
                   icon-left="eye"
                   appearance="minimal"
-                  @click="viewTrip(trip.name)"
+                  @click="fetchTripDetails(trip.name)"
                 />
 
                 <Button
@@ -284,6 +284,16 @@
       </button>
     </div>
   </div>
+
+    <!-- Sidebar -->
+
+    <Sidebar
+      v-if="showSidebar"
+      :record="selectedTrip"
+      title="تفاصيل الرحلة"
+      @close="showSidebar = false"
+    />
+
 </template>
 
 <script setup>
@@ -301,9 +311,15 @@ const isSubmitting = ref(false);
 const isCancelling = ref(false);
 const isDeleting = ref(false);
 const error = ref(null);
+
 const successMessage = ref('');
 const showCreateForm = ref(false);
 
+import Sidebar from "@/components/Sidebar.vue"
+
+const deliveryTrips = ref([])
+const selectedTrip = ref({})
+const showSidebar = ref(false)
 const newTrip = reactive({
   departure_time: new Date().toISOString().slice(0, 16),
   vehicle: '',
@@ -577,6 +593,30 @@ onMounted(() => {
   fetchTrips();
   fetchDependencies();
 });
+
+
+function fetchTripDetails(tripName) {
+  console.log("✅ Fetching trip:", tripName)
+
+  const resource = createResource({
+    url: "frappe.client.get",
+    params: {
+      doctype: "Delivery Trip",
+      name: tripName,
+    },
+    onSuccess(data) {
+      console.log("✅ Trip details fetched:", data)
+      selectedTrip.value = data
+      showSidebar.value = true
+    },
+    onError(err) {
+      console.error("❌ Error fetching trip:", err)
+    },
+  })
+
+  resource.fetch()
+}
+
 </script>
 
 <style scoped>
