@@ -9,9 +9,9 @@ const routes = [
     component: () => import('@/pages/Home.vue'),
   },
   {
-	path: '/driver',
-	name: 'Driver',
-	component: () => import('@/pages/Driver.vue'),
+    path: '/driver',
+    name: 'Driver',
+    component: () => import('@/pages/Driver.vue'),
   },
   {
     path: '/deliverytrip',
@@ -37,7 +37,12 @@ const routes = [
     path: '/address',
     name: 'Address',
     component: () => import('@/pages/Address.vue'),
-  }
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('@/pages/dashboard.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -56,7 +61,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.name === 'Login' && isLoggedIn) {
     next({ name: '/Home' })
   } else if (to.name !== 'Login' && !isLoggedIn) {
-    window.location.href = "/login"
+    window.location.href = '/login'
   } else {
     next()
   }

@@ -1,5 +1,4 @@
 import frappeUIPreset from 'frappe-ui/src/tailwind/preset'
-
 export default {
 	presets: [frappeUIPreset],
 	content: [
