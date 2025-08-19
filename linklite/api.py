@@ -551,9 +551,6 @@ def update_sales_invoice(invoice_name, customer=None, items=None, posting_date=N
         frappe.log_error(frappe.get_traceback(), "Failed to update sales invoice")
         return {"success": False, "message": str(e)}
 
-import frappe
-from frappe.utils import today
-
 @frappe.whitelist()
 def get_counts():
     """
