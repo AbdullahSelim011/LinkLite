@@ -153,16 +153,6 @@ def create_delivery_trip(departure_time, vehicle, driver, delivery_stops):
         frappe.log_error(title="Delivery Trip Creation Error", message=str(e))
         frappe.throw(_("حدث خطأ أثناء إنشاء الرحلة: {0}").format(str(e)))
 
-@frappe.whitelist()
-def get_delivery_trips():
-    """
-    يجلب جميع رحلات التوصيل.
-    """
-    return frappe.get_all(
-        "Delivery Trip",
-        fields=["name", "departure_time", "vehicle", "driver", "status", "docstatus"],
-        order_by="departure_time desc"
-    )
 
 @frappe.whitelist()
 def get_vehicles():
@@ -529,7 +519,7 @@ def delete_address(doctype, name):
     """Delete an address"""
     frappe.delete_doc(doctype, name)
     return "Address deleted successfully"
-# في ملف api.py
+
 @frappe.whitelist()
 def update_sales_invoice(invoice_name, customer=None, items=None, posting_date=None):
     try:
