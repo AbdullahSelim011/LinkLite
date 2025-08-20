@@ -28,20 +28,20 @@
             icon="refresh-cw"
             label="تحديث البيانات"
             class="px-4 py-2"
-          />
+          ></Button>
           <Button
             variant="ghost"
             icon="download"
             label="تصدير التقرير"
             class="px-4 py-2"
-          />
+          ></Button>
         </div>
       </div>
     </div>
 
     <div class="max-w-7xl mx-auto space-y-8">
       <!-- Metrics Summary -->
-      <MetricsSummary :refresh-interval="300000" ref="metricsRef" />
+      <MetricsSummary :refresh-interval="300000" ref="metricsRef" @refresh="fetchMetrics" :metrics="metrics"/>
 
       <!-- Charts Row 1 -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -322,14 +322,16 @@ import MetricsSummary from '@/components/dashboard/MetricsSummary.vue'
 import BarChart from '@/components/charts/BarChart.vue'
 import LineChart from '@/components/charts/LineChart.vue'
 import DoughnutChart from '@/components/charts/DoughnutChart.vue'
+import { frappe } from '@/plugins/frappe';
+import { toast } from 'vue-toast-notification'
+
+
 import {
   Star,
   Truck,
   Users,
   CheckCircle,
   AlertTriangle,
-  Clock,
-  MapPin,
   User,
   Package,
   Server,
@@ -344,7 +346,41 @@ import {
 const refreshing = ref(false)
 const revenueChartPeriod = ref('30d')
 const metricsRef = ref(null)
+const fetchMetrics = async () => {
+  try {
+    loading.value = true
 
+    const response = await call.get('linklite.api.dashboard_data')
+    console.log(response)
+    
+    if (response.message === "success") {
+      metrics.value = response.data
+    }
+
+
+
+
+  } catch (error) {
+    // Mock data 
+    toast.error('Error fetching metrics')
+    metrics.value = {
+      totalTrips: 1247,
+      totalRevenue: 185600,
+      activeCustomers: 342,
+      cancelledTrips: 8,
+      ongoingTrips: 23,
+      completedTrips: 15,
+      availableVehicles: 18,
+      totalVehicles: 25,
+      activeDrivers: 21,
+      totalDrivers: 28,
+      averageDeliveryTime: 42
+    }
+    console.log('Error fetching metrics:', error)
+  } finally {
+    loading.value = false
+  }
+}
 // Chart data
 const revenueChartData = reactive({
   labels: [
@@ -565,7 +601,10 @@ const dismissAlert = (id) => {
 }
 
 onMounted(() => {
-  // Initial data load is handled by components
+    // Set up auto-refresh
+    if (refreshInterval.value > 0) {
+    setInterval(fetchMetrics, refreshInterval.value)
+  }
 })
 </script>
 

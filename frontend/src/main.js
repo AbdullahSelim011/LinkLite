@@ -3,7 +3,8 @@ import { createApp } from "vue"
 import App from "./App.vue"
 import router from "./router"
 import { initSocket } from "./socket"
-
+import ToastPlugin from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-bootstrap.css';
 import {
 	Alert,
 	Badge,
@@ -38,7 +39,7 @@ setConfig("resourceFetcher", frappeRequest)
 app.use(router)
 app.use(resourcesPlugin)
 app.use(pageMetaPlugin)
-
+app.use(ToastPlugin)
 const socket = initSocket()
 app.config.globalProperties.$socket = socket
 

@@ -30,7 +30,7 @@ def get_monthly_count(doctype: str, date_field: str):
     filters = {date_field: ["between", [start_date, end_date]]}
     return get_count(doctype, filters)
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_total_delivered_orders_count_in_current_month(*args, **kwargs):
     """
     Returns the count of delivered orders in the current month.

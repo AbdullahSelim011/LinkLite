@@ -9,7 +9,7 @@ export default defineConfig({
     //   frappeProxy: {
     //     target: 'http://127.0.0.1:8002', // your frappe backend
     //   },
-      frappeProxy: true,
+      // frappeProxy: true,
       jinjaBootData: true,
       lucideIcons: true,
       buildConfig: {
@@ -38,7 +38,19 @@ export default defineConfig({
     include: ['frappe-ui > feather-icons', 'showdown', "engine.io-client",'highlight.js/lib/core', 'interactjs'],
   },
   server: {
-    port: 8002,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8002',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      'assets': {
+        target: 'http://127.0.0.1:8002',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/assets/, ''),
+      }
+    },
+    port: 8003,
     host: '127.0.0.1',
     allowedHosts: true,
   },

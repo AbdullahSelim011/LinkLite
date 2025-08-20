@@ -13,7 +13,7 @@ from frappe.core.doctype.user.user import User
 import json
 from frappe.utils import today
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_delivery_trips():
     return frappe.get_all(
         "Delivery Trip",
@@ -573,3 +573,133 @@ def get_counts():
     counts.active_drivers_count = frappe.db.count('Driver', filters={'status': 'Active'})
 
     return counts
+
+
+
+# ######################################################### #
+# Dashboard API - mostafa kadry
+# ######################################################### #
+import frappe
+from frappe.utils import get_first_day, get_last_day, nowdate
+
+def api_response(status_code: int, message: str, data=None):
+    """
+    Standardizes Frappe API responses.
+    """
+    frappe.local.response["http_status_code"] = status_code
+    frappe.local.response["message"] = message
+    if data is not None:
+        frappe.local.response["data"] = data
+    return frappe.local.response
+
+def get_count(doctype: str, filters: dict = None):
+    """
+    Centralized function to get the count of a doctype with optional filters.
+    """
+    try:
+        return frappe.db.count(doctype, filters=filters)
+    except Exception as e:
+        frappe.log_error(message=str(e), title=f"Error getting count for {doctype}")
+        return None
+
+def get_monthly_count(doctype: str, date_field: str):
+    """
+    A specific helper function to get the count for the current month.
+    """
+    start_date = get_first_day(nowdate())
+    end_date = get_last_day(nowdate())
+    filters = {date_field: ["between", [start_date, end_date]]}
+    return get_count(doctype, filters)
+
+@frappe.whitelist(allow_guest=True)
+def get_total_delivered_orders_count_in_current_month(*args, **kwargs):
+    """
+    Returns the count of delivered orders in the current month.
+    """
+    count = get_monthly_count("Delivery Trip", "departure_time")
+    api_response(200, "success", count) if count is not None else api_response(500, "error", "Could not fetch data.")
+
+@frappe.whitelist()
+def get_total_revenue_in_current_month(*args, **kwargs):
+    """
+    Returns the count of sales invoices (revenue) in the current month.
+    """
+    count = get_monthly_count("Sales Invoice", "posting_date")
+    api_response(200, "success", count) if count is not None else api_response(500, "error", "Could not fetch data.")
+
+@frappe.whitelist()
+def get_total_vehicles_count(*args, **kwargs):
+    """
+    Returns the total number of vehicles.
+    """
+    count = get_count("Vehicle")
+    api_response(200, "success", count) if count is not None else api_response(500, "error", "Could not fetch data.")
+
+@frappe.whitelist()
+def get_total_drivers_count(*args, **kwargs):
+    """
+    Returns the total number of drivers.
+    """
+    count = get_count("Driver")
+    api_response(200, "success", count) if count is not None else api_response(500, "error", "Could not fetch data.")
+
+@frappe.whitelist()
+def get_total_customers_count(*args, **kwargs):
+    """
+    Returns the total number of customers.
+    """
+    count = get_count("Customer")
+    api_response(200, "success", count) if count is not None else api_response(500, "error", "Could not fetch data.")
+
+
+def completed_trips_count(*args, **kwargs):
+    count = frappe.db.count("Delivery Trip", {"status": "Completed"})
+    return count
+
+def in_transit_trips_count(*args, **kwargs):
+    count = frappe.db.count("Delivery Trip", {"status": "In Transit"})
+    return count
+
+def cancel_delivery_trip(*args, **kwargs):
+    count = frappe.db.count("Delivery Trip", {"status": "Cancelled"})
+    return count
+
+def available_cars(*args, **kwargs):
+    count = frappe.db.count("Vehicle", {"status": "Active"})
+    return count
+
+def active_drivers_count(*args, **kwargs):
+    count = frappe.db.count("Driver", {"status": "Active"})
+    return count
+
+def get_total_vehicles_count(*args, **kwargs):
+    count = frappe.db.count("Vehicle")
+    return count
+@frappe.whitelist(allow_guest=True)
+def dashboard_data(*args, **kwargs):
+    """
+    Retrieves all dashboard data points in a single request.
+    """
+    try:
+        data = {
+            "totalTrips": get_monthly_count("Delivery Trip", "departure_time"),
+            "totalRevenue": get_monthly_count("Sales Invoice", "posting_date"),
+            "totalVehicles": get_count("Vehicle"),
+            "totalDrivers": get_count("Driver"),
+            "activeCustomers": get_count("Customer"),
+            "completedTrips" : completed_trips_count(),
+            "ongoingTrips" : in_transit_trips_count(),
+            "cancelledTrips" : cancel_delivery_trip(),
+            "availableVehicles" : available_cars(),
+            "activeDrivers" : active_drivers_count(),
+            "totalVehicles": get_total_vehicles_count(),
+        }
+        
+        if any(value is None for value in data.values()):
+            return api_response(500, "Error fetching some dashboard data.", None)
+            
+        api_response(200, "success", data)
+    except Exception as e:
+        frappe.log_error(message=str(e), title="Dashboard data fetch error")
+        api_response(500, "error", str(e))
+

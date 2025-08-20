@@ -262,3 +262,8 @@ after_install = "linklite.install.after_install"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+import frappe
+def boot_session(bootinfo):
+    frappe.local.cookie_manager.cookies = {
+        k: {**v, "samesite": "None"} for k, v in frappe.local.cookie_manager.cookies.items()
+    }

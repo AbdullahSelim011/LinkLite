@@ -41,7 +41,7 @@ const routes = [
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: () => import('@/pages/dashboard.vue'),
+    component: () => import('@/pages/Dashboard.vue'),
   },
 ]
 

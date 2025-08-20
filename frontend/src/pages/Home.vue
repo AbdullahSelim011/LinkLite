@@ -25,11 +25,11 @@
         <div class="flex items-center space-x-4 space-x-reverse">
           <RouterLink to="/dashboard">
             <Button
-              variant="solid"
+              variant="outline"
               icon="bar-chart"
               label="لوحة التحكم"
-              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all flex items-center space-x-2 space-x-reverse"
-            />
+              class="w-full bg-blue-600 hover:bg-blue-700 py-3 text-lg font-medium transition-colors"
+            ></Button>
           </RouterLink>
           <Button
             variant="ghost"
@@ -45,7 +45,7 @@
             icon="user"
             label="حسابي"
             class="px-4 py-2 border border-gray-200 hover:border-blue-500 rounded-lg transition-all flex items-center space-x-2 space-x-reverse"
-          />
+          ></Button>
         </div>
       </div>
     </div>
@@ -55,23 +55,23 @@
       <div class="mb-8">
         <RouterLink to="/dashboard" class="block">
           <div
-            class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg p-8 text-white transform transition-transform hover:-translate-y-1 hover:shadow-xl"
+            class="bg-white  rounded-2xl shadow-lg p-8 text-gray-900 transform transition-transform hover:-translate-y-1 hover:shadow-xl"
           >
             <div class="flex items-center justify-between">
               <div>
                 <h2 class="text-2xl font-bold mb-2">📊 لوحة التحكم الشاملة</h2>
-                <p class="text-blue-100 mb-4">
+                <p class="text-gray-600 mb-4">
                   اطلع على جميع الإحصائيات والمقاييس في مكان واحد
                 </p>
                 <Button
-                  variant="solid"
-                  class="bg-white text-blue-50 hover:bg-blue-50 px-6 py-3 font-medium"
+                  variant="outline"
+                  class="px-6 py-3 font-medium hover:bg-blue-600 hover:text-white transition-colors"
                 >
                   عرض لوحة التحكم
                 </Button>
               </div>
               <div class="hidden md:block">
-                <div class="text-6xl opacity-20">📈</div>
+                <div class="text-6xl">📈</div>
               </div>
             </div>
           </div>
@@ -102,7 +102,7 @@
                 المثلى وتنبيهات التأخير
               </p>
               <Button
-                variant="solid"
+                variant="outline"
                 class="w-full bg-blue-600 hover:bg-blue-700 py-3 text-lg font-medium transition-colors"
               >
                 عرض الرحلات
@@ -331,20 +331,18 @@
 import { ref, onMounted } from 'vue'
 import { Button } from 'frappe-ui'
 import { RouterLink } from 'vue-router'
-import { frappe } from 'frappe-js-sdk'
+import { frappe } from '@/plugins/frappe'
 
 const activeTripsCount = ref(0)
 const todayInvoicesCount = ref(0)
 const availableVehiclesCount = ref(0)
 const activeDriversCount = ref(0)
-
+const call = frappe.call();
 const fetchData = async () => {
   try {
-    const data = await frappe.call({
-      method: 'linklite.api.get_counts',
-    })
-
-    if (data.message) {
+    const data = await call.get('linklite.api.get_counts');
+    console.log(data)
+    if (data?.message) {
       activeTripsCount.value = data.message.active_trips_count
       todayInvoicesCount.value = data.message.today_invoices_count
       availableVehiclesCount.value = data.message.available_vehicles_count
