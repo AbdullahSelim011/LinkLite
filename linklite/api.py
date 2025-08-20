@@ -665,41 +665,49 @@ def cancel_delivery_trip(*args, **kwargs):
     return count
 
 def available_cars(*args, **kwargs):
-    count = frappe.db.count("Vehicle", {"status": "Active"})
+    # To be implemented , the doctype it self is not submittable
+    count = frappe.db.count("Vehicle")
     return count
 
 def active_drivers_count(*args, **kwargs):
     count = frappe.db.count("Driver", {"status": "Active"})
     return count
 
-def get_total_vehicles_count(*args, **kwargs):
-    count = frappe.db.count("Vehicle")
-    return count
 @frappe.whitelist(allow_guest=True)
 def dashboard_data(*args, **kwargs):
     """
     Retrieves all dashboard data points in a single request.
     """
     try:
-        data = {
-            "totalTrips": get_monthly_count("Delivery Trip", "departure_time"),
-            "totalRevenue": get_monthly_count("Sales Invoice", "posting_date"),
-            "totalVehicles": get_count("Vehicle"),
-            "totalDrivers": get_count("Driver"),
-            "activeCustomers": get_count("Customer"),
-            "completedTrips" : completed_trips_count(),
-            "ongoingTrips" : in_transit_trips_count(),
-            "cancelledTrips" : cancel_delivery_trip(),
-            "availableVehicles" : available_cars(),
-            "activeDrivers" : active_drivers_count(),
-            "totalVehicles": get_total_vehicles_count(),
-        }
+        data = {}
         
+        funcs = {
+            "totalTrips": lambda: get_monthly_count("Delivery Trip", "departure_time"),
+            "totalRevenue": lambda: get_monthly_count("Sales Invoice", "posting_date"),
+            "totalVehicles": lambda: get_count("Vehicle"),
+            "totalDrivers": lambda: get_count("Driver"),
+            "activeCustomers": lambda: get_count("Customer"),
+            "completedTrips": completed_trips_count,
+            "ongoingTrips": in_transit_trips_count,
+            "cancelledTrips": cancel_delivery_trip,
+            "availableVehicles": available_cars,
+            "activeDrivers": active_drivers_count,
+        }
+
+        for key, fn in funcs.items():
+            try:
+                data[key] = fn()
+            except Exception as e:
+                frappe.log_error(f"Dashboard metric `{key}` failed: {e}", "Dashboard Debug")
+                data[key] = None
+
         if any(value is None for value in data.values()):
-            return api_response(500, "Error fetching some dashboard data.", None)
-            
+            api_response(500, "Error fetching some dashboard data.", data)
+        
         api_response(200, "success", data)
+
     except Exception as e:
         frappe.log_error(message=str(e), title="Dashboard data fetch error")
-        api_response(500, "error", str(e))
+        api_response(501, "error", str(e))
+
 

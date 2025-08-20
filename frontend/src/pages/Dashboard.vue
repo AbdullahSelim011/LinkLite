@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6"
-    dir="rtl"
-  >
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6" dir="rtl">
     <!-- Header -->
     <div class="max-w-7xl mx-auto mb-8">
       <div class="flex justify-between items-center">
@@ -11,9 +8,7 @@
             <span class="ml-3 text-blue-600">📊</span>
             <span class="relative">
               لوحة التحكم الرئيسية
-              <span
-                class="absolute bottom-0 right-0 w-full h-1 bg-blue-600 rounded-full"
-              ></span>
+              <span class="absolute bottom-0 right-0 w-full h-1 bg-blue-600 rounded-full"></span>
             </span>
           </h1>
           <p class="text-gray-600 mt-2 text-lg">
@@ -21,75 +16,52 @@
           </p>
         </div>
         <div class="flex items-center space-x-4 space-x-reverse">
-          <Button
-            @click="refreshData"
-            :loading="refreshing"
-            variant="outline"
-            icon="refresh-cw"
-            label="تحديث البيانات"
-            class="px-4 py-2"
-          ></Button>
-          <Button
-            variant="ghost"
-            icon="download"
-            label="تصدير التقرير"
-            class="px-4 py-2"
-          ></Button>
+          <Button @click="refreshData" :loading="refreshing" variant="outline" icon="refresh-cw" label="تحديث البيانات"
+            class="px-4 py-2"></Button>
+          <Button variant="ghost" icon="download" label="تصدير التقرير" class="px-4 py-2"></Button>
         </div>
       </div>
     </div>
 
     <div class="max-w-7xl mx-auto space-y-8">
       <!-- Metrics Summary -->
-      <MetricsSummary :refresh-interval="300000" ref="metricsRef" @refresh="fetchMetrics" :metrics="metrics"/>
+      <MetricsSummary :metrics="metrics" :loading="loading" />
 
-      <!-- Charts Row 1 -->
+
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Revenue Trend Chart -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-semibold text-gray-800">اتجاه الإيرادات</h3>
             <div class="flex space-x-2 space-x-reverse">
-              <button
-                @click="revenueChartPeriod = '7d'"
-                :class="[
-                  'px-3 py-1 text-sm rounded-md transition-colors',
-                  revenueChartPeriod === '7d'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
-                ]"
-              >
+              <button @click="revenueChartPeriod = '7d'" :class="[
+                'px-3 py-1 text-sm rounded-md transition-colors',
+                revenueChartPeriod === '7d'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+              ]">
                 7 أيام
               </button>
-              <button
-                @click="revenueChartPeriod = '30d'"
-                :class="[
-                  'px-3 py-1 text-sm rounded-md transition-colors',
-                  revenueChartPeriod === '30d'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
-                ]"
-              >
+              <button @click="revenueChartPeriod = '30d'" :class="[
+                'px-3 py-1 text-sm rounded-md transition-colors',
+                revenueChartPeriod === '30d'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+              ]">
                 30 يوم
               </button>
-              <button
-                @click="revenueChartPeriod = '90d'"
-                :class="[
-                  'px-3 py-1 text-sm rounded-md transition-colors',
-                  revenueChartPeriod === '90d'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
-                ]"
-              >
+              <button @click="revenueChartPeriod = '90d'" :class="[
+                'px-3 py-1 text-sm rounded-md transition-colors',
+                revenueChartPeriod === '90d'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+              ]">
                 90 يوم
               </button>
             </div>
           </div>
           <div class="h-80">
-            <LineChart
-              :data="revenueChartData"
-              title="الإيرادات اليومية (ر.س)"
-            />
+            <LineChart :data="revenueChartData" title="الإيرادات اليومية (ر.س)" />
           </div>
         </div>
 
@@ -97,10 +69,7 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 class="text-xl font-semibold text-gray-800 mb-4">حالة الرحلات</h3>
           <div class="h-80">
-            <DoughnutChart
-              :data="tripsStatusChartData"
-              title="توزيع حالات الرحلات"
-            />
+            <DoughnutChart :data="tripsStatusChartData" title="توزيع حالات الرحلات" />
           </div>
         </div>
       </div>
@@ -108,17 +77,12 @@
       <!-- Charts Row 2 -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Monthly Performance -->
-        <div
-          class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 class="text-xl font-semibold text-gray-800 mb-4">
             الأداء الشهري
           </h3>
           <div class="h-80">
-            <BarChart
-              :data="monthlyPerformanceData"
-              title="مقارنة الأداء الشهري"
-            />
+            <BarChart :data="monthlyPerformanceData" title="مقارنة الأداء الشهري" />
           </div>
         </div>
 
@@ -128,15 +92,11 @@
             أداء السائقين
           </h3>
           <div class="space-y-4">
-            <div
-              v-for="driver in topDrivers"
-              :key="driver.id"
-              class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            >
+            <div v-for="driver in topDrivers" :key="driver.id"
+              class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
               <div class="flex items-center">
                 <div
-                  class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold mr-3"
-                >
+                  class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold mr-3">
                   {{ driver.name.charAt(0) }}
                 </div>
                 <div>
@@ -149,16 +109,14 @@
                   <Star class="w-4 h-4 text-yellow-400 fill-current" />
                   <span class="text-sm font-medium text-gray-700 mr-1">{{
                     driver.rating
-                  }}</span>
+                    }}</span>
                 </div>
-                <div
-                  :class="[
-                    'px-2 py-1 rounded-full text-xs font-medium',
-                    driver.status === 'active'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-gray-100 text-gray-800',
-                  ]"
-                >
+                <div :class="[
+                  'px-2 py-1 rounded-full text-xs font-medium',
+                  driver.status === 'active'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-gray-100 text-gray-800',
+                ]">
                   {{ driver.status === 'active' ? 'نشط' : 'غير متاح' }}
                 </div>
               </div>
@@ -173,29 +131,17 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-semibold text-gray-800">الأنشطة الأخيرة</h3>
-            <Button
-              variant="ghost"
-              icon="external-link"
-              label="عرض الكل"
-              class="text-sm"
-            />
+            <Button variant="ghost" icon="external-link" label="عرض الكل" class="text-sm" />
           </div>
           <div class="space-y-4">
-            <div
-              v-for="activity in recentActivities"
-              :key="activity.id"
-              class="flex items-start space-x-3 space-x-reverse p-3 hover:bg-gray-50 rounded-lg transition-colors"
-            >
-              <div
-                :class="[
-                  'p-2 rounded-full mt-1',
-                  getActivityIconBg(activity.type),
-                ]"
-              >
-                <component
-                  :is="getActivityIcon(activity.type)"
-                  :class="['w-4 h-4', getActivityIconColor(activity.type)]"
-                />
+            <div v-for="activity in recentActivities" :key="activity.id"
+              class="flex items-start space-x-3 space-x-reverse p-3 hover:bg-gray-50 rounded-lg transition-colors">
+              <div :class="[
+                'p-2 rounded-full mt-1',
+                getActivityIconBg(activity.type),
+              ]">
+                <component :is="getActivityIcon(activity.type)"
+                  :class="['w-4 h-4', getActivityIconColor(activity.type)]" />
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-gray-900">
@@ -217,35 +163,22 @@
               التنبيهات والإشعارات
             </h3>
             <div class="flex items-center space-x-2 space-x-reverse">
-              <span
-                class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full"
-              >
+              <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">
                 {{ alerts.length }} تنبيه
               </span>
-              <Button
-                variant="ghost"
-                icon="bell-off"
-                class="text-sm p-1"
-                @click="clearAllAlerts"
-              />
+              <Button variant="ghost" icon="bell-off" class="text-sm p-1" @click="clearAllAlerts" />
             </div>
           </div>
           <div class="space-y-3">
-            <div
-              v-for="alert in alerts"
-              :key="alert.id"
-              :class="[
-                'p-4 rounded-lg border-r-4 transition-all hover:shadow-sm',
-                getAlertStyles(alert.level),
-              ]"
-            >
+            <div v-for="alert in alerts" :key="alert.id" :class="[
+              'p-4 rounded-lg border-r-4 transition-all hover:shadow-sm',
+              getAlertStyles(alert.level),
+            ]">
               <div class="flex items-start justify-between">
                 <div class="flex-1">
                   <div class="flex items-center">
-                    <component
-                      :is="getAlertIcon(alert.level)"
-                      :class="['w-5 h-5 mr-2', getAlertIconColor(alert.level)]"
-                    />
+                    <component :is="getAlertIcon(alert.level)"
+                      :class="['w-5 h-5 mr-2', getAlertIconColor(alert.level)]" />
                     <h4 class="text-sm font-semibold">{{ alert.title }}</h4>
                   </div>
                   <p class="text-sm text-gray-600 mt-1">{{ alert.message }}</p>
@@ -253,12 +186,8 @@
                     {{ formatRelativeTime(alert.timestamp) }}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  icon="x"
-                  class="p-1 opacity-50 hover:opacity-100"
-                  @click="dismissAlert(alert.id)"
-                />
+                <Button variant="ghost" icon="x" class="p-1 opacity-50 hover:opacity-100"
+                  @click="dismissAlert(alert.id)" />
               </div>
             </div>
           </div>
@@ -270,9 +199,7 @@
         <h3 class="text-xl font-semibold text-gray-800 mb-4">حالة النظام</h3>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="text-center">
-            <div
-              class="w-16 h-16 mx-auto mb-3 bg-green-100 rounded-full flex items-center justify-center"
-            >
+            <div class="w-16 h-16 mx-auto mb-3 bg-green-100 rounded-full flex items-center justify-center">
               <Server class="w-8 h-8 text-green-600" />
             </div>
             <h4 class="font-medium text-gray-800">الخادم الرئيسي</h4>
@@ -280,9 +207,7 @@
             <p class="text-xs text-gray-500">وقت التشغيل: 99.9%</p>
           </div>
           <div class="text-center">
-            <div
-              class="w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-full flex items-center justify-center"
-            >
+            <div class="w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-full flex items-center justify-center">
               <Database class="w-8 h-8 text-blue-600" />
             </div>
             <h4 class="font-medium text-gray-800">قاعدة البيانات</h4>
@@ -290,9 +215,7 @@
             <p class="text-xs text-gray-500">استجابة: 12ms</p>
           </div>
           <div class="text-center">
-            <div
-              class="w-16 h-16 mx-auto mb-3 bg-yellow-100 rounded-full flex items-center justify-center"
-            >
+            <div class="w-16 h-16 mx-auto mb-3 bg-yellow-100 rounded-full flex items-center justify-center">
               <Wifi class="w-8 h-8 text-yellow-600" />
             </div>
             <h4 class="font-medium text-gray-800">الاتصال</h4>
@@ -300,9 +223,7 @@
             <p class="text-xs text-gray-500">زمن الاستجابة: 245ms</p>
           </div>
           <div class="text-center">
-            <div
-              class="w-16 h-16 mx-auto mb-3 bg-purple-100 rounded-full flex items-center justify-center"
-            >
+            <div class="w-16 h-16 mx-auto mb-3 bg-purple-100 rounded-full flex items-center justify-center">
               <Shield class="w-8 h-8 text-purple-600" />
             </div>
             <h4 class="font-medium text-gray-800">الأمان</h4>
@@ -322,9 +243,23 @@ import MetricsSummary from '@/components/dashboard/MetricsSummary.vue'
 import BarChart from '@/components/charts/BarChart.vue'
 import LineChart from '@/components/charts/LineChart.vue'
 import DoughnutChart from '@/components/charts/DoughnutChart.vue'
-import { frappe } from '@/plugins/frappe';
-import { toast } from 'vue-toast-notification'
+import { frappe } from '@/plugins/frappe'
+import { toast } from 'vue-sonner'
 
+const loading = ref(true)
+const call = frappe.call()
+const metrics = ref({
+  totalTrips: 0,
+  totalRevenue: 0,
+  activeCustomers: 0,
+  cancelledTrips: 0,
+  ongoingTrips: 0,
+  completedTrips: 0,
+  availableVehicles: 0,
+  totalVehicles: 0,
+  activeDrivers: 0,
+  totalDrivers: 0,
+})
 
 import {
   Star,
@@ -345,40 +280,32 @@ import {
 // Reactive data
 const refreshing = ref(false)
 const revenueChartPeriod = ref('30d')
-const metricsRef = ref(null)
 const fetchMetrics = async () => {
   try {
     loading.value = true
+    console.log('Fetching dashboard metrics...')
 
     const response = await call.get('linklite.api.dashboard_data')
-    console.log(response)
-    
-    if (response.message === "success") {
-      metrics.value = response.data
+
+    console.log('API Response:', response)
+
+    if (response && response.data) {
+      const data = response.data
+      console.log('Dashboard data received:', data)
+
+      metrics.value = data
+
+      console.log('Updated metrics:', metrics.value)
+    } else {
+      console.error('Invalid response format:', response)
+      toast.error('تنسيق البيانات غير صحيح')
     }
-
-
-
-
   } catch (error) {
-    // Mock data 
-    toast.error('Error fetching metrics')
-    metrics.value = {
-      totalTrips: 1247,
-      totalRevenue: 185600,
-      activeCustomers: 342,
-      cancelledTrips: 8,
-      ongoingTrips: 23,
-      completedTrips: 15,
-      availableVehicles: 18,
-      totalVehicles: 25,
-      activeDrivers: 21,
-      totalDrivers: 28,
-      averageDeliveryTime: 42
-    }
-    console.log('Error fetching metrics:', error)
+    console.error('Error fetching metrics:', error)
+    toast.error(`فشل في تحميل البيانات: ${error.message || error}`)
   } finally {
     loading.value = false
+    console.log('Loading state set to false')
   }
 }
 // Chart data
@@ -401,21 +328,24 @@ const revenueChartData = reactive({
     },
   ],
 })
-
-const tripsStatusChartData = reactive({
-  labels: ['مكتملة', 'قيد التنفيذ', 'متأخرة', 'ملغاة'],
+const tripsStatusChartData = computed(() => ({
+  labels: ['مكتملة', 'قيد التنفيذ', 'ملغاه'],
   datasets: [
     {
-      data: [65, 20, 10, 5],
+      data: [
+        metrics.value.completedTrips || 0,
+        metrics.value.ongoingTrips || 0,
+        metrics.value.cancelledTrips || 0,
+      ],
       backgroundColor: [
-        'rgba(16, 185, 129, 0.8)',
-        'rgba(59, 130, 246, 0.8)',
-        'rgba(245, 158, 11, 0.8)',
-        'rgba(239, 68, 68, 0.8)',
+        'rgba(16, 185, 129, 0.8)',  
+        'rgba(59, 130, 246, 0.8)',  
+        'rgba(245, 158, 11, 0.8)',  
       ],
     },
   ],
-})
+}))
+
 
 const monthlyPerformanceData = reactive({
   labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
@@ -574,14 +504,10 @@ const refreshData = async () => {
   refreshing.value = true
   try {
     // Refresh metrics
-    if (metricsRef.value) {
-      await metricsRef.value.refresh()
+    if (metrics.value) {
+      await fetchMetrics()
     }
 
-    // Simulate data refresh
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Update chart data here if needed
   } catch (error) {
     console.error('Error refreshing data:', error)
   } finally {
@@ -601,9 +527,10 @@ const dismissAlert = (id) => {
 }
 
 onMounted(() => {
-    // Set up auto-refresh
-    if (refreshInterval.value > 0) {
-    setInterval(fetchMetrics, refreshInterval.value)
+  fetchMetrics()
+  // Set up auto-refresh
+  if (300000 > 0) {
+    setInterval(fetchMetrics, 300000)
   }
 })
 </script>
@@ -640,6 +567,7 @@ onMounted(() => {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
