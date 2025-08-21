@@ -1,15 +1,11 @@
 <template>
   <div class="w-full h-full">
-    <Doughnut
-      :data="chartData"
-      :options="chartOptions"
-      class="w-full h-full"
-    />
+    <Doughnut :data="chartData" :options="chartOptions" class="w-full h-full" />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, watch, ref } from 'vue'
 import { Doughnut } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -61,17 +57,21 @@ const props = defineProps({
     ]
   }
 })
+const chartRef = ref(null)
+
+console.log(props.data)
 
 const chartData = computed(() => ({
-  labels: props.data.labels || [],
-  datasets: props.data.datasets?.map((dataset, index) => ({
+  labels: props.data?.labels || [],
+  datasets: (props.data?.datasets || []).map(dataset => ({
     ...dataset,
+    data: dataset?.data?.map(v => Number(v) || 0),
     backgroundColor: dataset.backgroundColor || props.colors,
     borderColor: dataset.borderColor || props.borderColors,
     borderWidth: 2,
     hoverBorderWidth: 4,
     hoverOffset: 8
-  })) || []
+  }))
 }))
 
 const chartOptions = computed(() => ({
@@ -133,11 +133,11 @@ const chartOptions = computed(() => ({
         family: 'Tajawal, sans-serif'
       },
       callbacks: {
-        label: function(context) {
+        label: function (context) {
           const label = context.label || ''
           const value = context.parsed
-          const total = context.dataset.data.reduce((acc, val) => acc + val, 0)
-          const percentage = ((value / total) * 100).toFixed(1)
+          const total = context.dataset.data.reduce((acc, val) => acc + Number(val || 0), 0)
+          const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0
           return `${label}: ${value} (${percentage}%)`
         }
       }
@@ -154,6 +154,18 @@ const chartOptions = computed(() => ({
     intersect: false
   }
 }))
+watch(
+  () => props.data,
+  () => {
+    if (chartRef.value?.chart) {
+      chartRef.value.chart.update()
+    }
+  },
+  { deep: true }
+)
+onMounted(() => {
+  console.log("Chart Data Received:", props.data)
+})
 </script>
 
 <style scoped>

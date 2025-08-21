@@ -5,7 +5,7 @@ from frappe.utils import getdate, nowdate, flt
 from frappe.utils.csvutils import build_csv_response
 from frappe.utils.xlsxutils import make_xlsx
 import openpyxl
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO
 from frappe.utils import get_url
 from frappe.auth import LoginManager
@@ -672,6 +672,38 @@ def available_cars(*args, **kwargs):
 def active_drivers_count(*args, **kwargs):
     count = frappe.db.count("Driver", {"status": "Active"})
     return count
+def safe_int(value, default=30):
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
+
+# get all sales invoices on accrual basis
+@frappe.whitelist(allow_guest=True)
+def revenueChartData(*args, **kwargs):
+    period = safe_int(kwargs.get("period", 30))
+
+    # Ensure period is an integer (fallback to 30 if not valid)
+    if not isinstance(period, int) or period <= 0:
+        print("Invalid period, defaulting to 30 days",type(period), period)
+        period = 30
+    
+    # Calculate start and end dates
+    start_date = (datetime.now() - timedelta(days=period)).date()
+    end_date = datetime.now().date()
+    
+    data = frappe.db.get_list("Sales Invoice", filters={"posting_date": ["between", [start_date, end_date]]}, order_by="posting_date asc",
+            fields=["posting_date", "grand_total"], ignore_permissions=True)
+    
+    return {
+        "period_days": period,
+        "start_date": str(start_date),
+        "end_date": str(end_date),
+        "records": data
+    }
+    
+    
+    
 
 @frappe.whitelist(allow_guest=True)
 def dashboard_data(*args, **kwargs):
@@ -692,6 +724,7 @@ def dashboard_data(*args, **kwargs):
             "cancelledTrips": cancel_delivery_trip,
             "availableVehicles": available_cars,
             "activeDrivers": active_drivers_count,
+            "revenueChartData": lambda: revenueChartData(period=kwargs.get("period", 30)),
         }
 
         for key, fn in funcs.items():

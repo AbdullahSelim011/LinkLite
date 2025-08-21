@@ -34,25 +34,25 @@
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-semibold text-gray-800">اتجاه الإيرادات</h3>
             <div class="flex space-x-2 space-x-reverse">
-              <button @click="revenueChartPeriod = '7d'" :class="[
+              <button @click="revenueChartPeriod = 7" :class="[
                 'px-3 py-1 text-sm rounded-md transition-colors',
-                revenueChartPeriod === '7d'
+                revenueChartPeriod === 7
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
               ]">
                 7 أيام
               </button>
-              <button @click="revenueChartPeriod = '30d'" :class="[
+              <button @click="revenueChartPeriod = 30" :class="[
                 'px-3 py-1 text-sm rounded-md transition-colors',
-                revenueChartPeriod === '30d'
+                revenueChartPeriod === 30
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
               ]">
                 30 يوم
               </button>
-              <button @click="revenueChartPeriod = '90d'" :class="[
+              <button @click="revenueChartPeriod = 90" :class="[
                 'px-3 py-1 text-sm rounded-md transition-colors',
-                revenueChartPeriod === '90d'
+                revenueChartPeriod === 90
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
               ]">
@@ -69,7 +69,7 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 class="text-xl font-semibold text-gray-800 mb-4">حالة الرحلات</h3>
           <div class="h-80">
-            <DoughnutChart :data="tripsStatusChartData" title="توزيع حالات الرحلات" />
+            <DoughnutChart :key="JSON.stringify(tripsStatusChartData)" :data="tripsStatusChartData" title="توزيع حالات الرحلات" />
           </div>
         </div>
       </div>
@@ -237,7 +237,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch , watchEffect, nextTick } from 'vue'
 import { Button } from 'frappe-ui'
 import MetricsSummary from '@/components/dashboard/MetricsSummary.vue'
 import BarChart from '@/components/charts/BarChart.vue'
@@ -247,7 +247,7 @@ import { frappe } from '@/plugins/frappe'
 import { toast } from 'vue-sonner'
 
 const loading = ref(true)
-const call = frappe.call()
+const call = frappe.call() 
 const metrics = ref({
   totalTrips: 0,
   totalRevenue: 0,
@@ -259,6 +259,7 @@ const metrics = ref({
   totalVehicles: 0,
   activeDrivers: 0,
   totalDrivers: 0,
+  revenueChartData: [],
 })
 
 import {
@@ -279,22 +280,18 @@ import {
 
 // Reactive data
 const refreshing = ref(false)
-const revenueChartPeriod = ref('30d')
+
 const fetchMetrics = async () => {
   try {
     loading.value = true
-    console.log('Fetching dashboard metrics...')
 
     const response = await call.get('linklite.api.dashboard_data')
-
-    console.log('API Response:', response)
+    console.log(response)
 
     if (response && response.data) {
       const data = response.data
-      console.log('Dashboard data received:', data)
 
-      metrics.value = data
-
+      Object.assign(metrics.value, data)
       console.log('Updated metrics:', metrics.value)
     } else {
       console.error('Invalid response format:', response)
@@ -308,44 +305,83 @@ const fetchMetrics = async () => {
     console.log('Loading state set to false')
   }
 }
-// Chart data
-const revenueChartData = reactive({
-  labels: [
-    'السبت',
-    'الأحد',
-    'الاثنين',
-    'الثلاثاء',
-    'الأربعاء',
-    'الخميس',
-    'الجمعة',
-  ],
-  datasets: [
-    {
-      label: 'الإيرادات',
-      data: [12000, 19000, 15000, 25000, 22000, 30000, 28000],
-      borderColor: 'rgba(59, 130, 246, 1)',
-      backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    },
-  ],
-})
-const tripsStatusChartData = computed(() => ({
-  labels: ['مكتملة', 'قيد التنفيذ', 'ملغاه'],
-  datasets: [
-    {
-      data: [
-        metrics.value.completedTrips || 0,
-        metrics.value.ongoingTrips || 0,
-        metrics.value.cancelledTrips || 0,
-      ],
-      backgroundColor: [
-        'rgba(16, 185, 129, 0.8)',  
-        'rgba(59, 130, 246, 0.8)',  
-        'rgba(245, 158, 11, 0.8)',  
-      ],
-    },
-  ],
-}))
 
+// Chart data
+const revenueChartPeriod = ref(30)
+const revenueChartData = computed(() => {
+  const records = metrics.value.revenueChartData?.records || []
+  console.log("Revenue records:", records)
+
+  // Labels = formatted posting_date (DD-MM)
+  const labels = records.map(r => {
+    const d = new Date(r.posting_date)
+    return `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}`
+  })
+
+  // Data = grand_total values
+  const data = records.map(r => Number(r.grand_total) || 0)
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: 'الإيرادات',
+        data,
+        borderColor: 'rgba(59, 130, 246, 1)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      },
+    ],
+  }
+})
+
+const fetchRevenueChartData = async (period = 30) => {
+  try {
+    loading.value = true
+
+    const response = await call.get('linklite.api.revenueChartData', { period })
+    console.log(response)
+
+    if (response && response.message) {
+      const data = response.message
+      metrics.value.revenueChartData = data
+    
+    } else {
+      console.error('Invalid response format:', response)
+      toast.error('تنسيق البيانات غير صحيح')
+    }
+  } catch (error) {
+    console.error('Error fetching metrics:', error)
+    toast.error(`فشل في تحميل البيانات: ${error.message || error}`)
+  } finally {
+    loading.value = false
+    console.log('Loading state set to false')
+  }
+}
+watch(revenueChartPeriod, () => {
+  fetchRevenueChartData(revenueChartPeriod.value)
+})
+console.log(revenueChartData)
+const tripsStatusChartData = computed(() => {
+  return {
+    labels: ['مكتملة', 'قيد التنفيذ', 'ملغاه'],
+    datasets: [
+      {
+        data: [
+          Number(metrics.value.completedTrips) || 0,
+          Number(metrics.value.ongoingTrips) || 0,
+          Number(metrics.value.cancelledTrips) || 0,
+        ],
+        backgroundColor: [
+          'rgba(16, 185, 129, 0.8)',  
+          'rgba(59, 130, 246, 0.8)',  
+          'rgba(245, 158, 11, 0.8)',  
+        ],
+      },
+    ],
+  }
+})
 
 const monthlyPerformanceData = reactive({
   labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
@@ -528,10 +564,11 @@ const dismissAlert = (id) => {
 
 onMounted(() => {
   fetchMetrics()
-  // Set up auto-refresh
-  if (300000 > 0) {
-    setInterval(fetchMetrics, 300000)
-  }
+})
+
+onMounted(async () => {
+  await fetchMetrics()
+  await nextTick()
 })
 </script>
 
