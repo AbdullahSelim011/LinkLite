@@ -32,7 +32,7 @@
             <span v-if="unit" class="text-lg text-gray-500 mr-2">{{ unit }}</span>
           </div>
 
-          <div v-if="change !== undefined" class="flex items-center mt-2">
+          <!-- <div v-if="change !== undefined" class="flex items-center mt-2">
             <component
               :is="changeIcon"
               :class="[
@@ -47,11 +47,11 @@
               {{ Math.abs(change) }}{{ changeUnit }}
             </span>
             <span class="text-sm text-gray-500 mr-2">{{ changeLabel }}</span>
-          </div>
+          </div> -->
 
-          <div v-if="description" class="mt-2">
+          <!-- <div v-if="description" class="mt-2">
             <p class="text-xs text-gray-400">{{ description }}</p>
-          </div>
+          </div> -->
         </div>
       </div>
 

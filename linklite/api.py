@@ -620,12 +620,21 @@ def get_total_delivered_orders_count_in_current_month(*args, **kwargs):
     api_response(200, "success", count) if count is not None else api_response(500, "error", "Could not fetch data.")
 
 @frappe.whitelist()
-def get_total_revenue_in_current_month(*args, **kwargs):
+def get_total_revenue_in_current_month():
     """
-    Returns the count of sales invoices (revenue) in the current month.
+    Returns the total revenue (sum of grand_total) of Sales Invoices in the current month.
     """
-    count = get_monthly_count("Sales Invoice", "posting_date")
-    api_response(200, "success", count) if count is not None else api_response(500, "error", "Could not fetch data.")
+    invoices = frappe.db.get_all(
+        "Sales Invoice",
+        filters={
+            "posting_date": ["between", [get_first_day(nowdate()), get_last_day(nowdate())]],
+            
+        },
+        fields=["grand_total"]
+    )
+
+    total_revenue = sum([inv["grand_total"] for inv in invoices])
+    return total_revenue
 
 @frappe.whitelist()
 def get_total_vehicles_count(*args, **kwargs):
@@ -715,7 +724,7 @@ def dashboard_data(*args, **kwargs):
         
         funcs = {
             "totalTrips": lambda: get_monthly_count("Delivery Trip", "departure_time"),
-            "totalRevenue": lambda: get_monthly_count("Sales Invoice", "posting_date"),
+            "totalRevenue": lambda: get_total_revenue_in_current_month(),
             "totalVehicles": lambda: get_count("Vehicle"),
             "totalDrivers": lambda: get_count("Driver"),
             "activeCustomers": lambda: get_count("Customer"),

@@ -9,7 +9,7 @@
       <Sidebar
         :header="{
           title: 'جود النقل',
-          logo: '/assets/linklite/logo.png',
+          logo: '/src/assets/logo.png',
           menuItems: [
             {
               label: 'تبديل الثيم',
