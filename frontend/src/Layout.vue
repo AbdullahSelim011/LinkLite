@@ -1,7 +1,11 @@
 <template>
   <div>
     <Navbar />
-    <div class="flex h-screen w-full flex-row-reverse bg-surface-white shadow">
+    <div
+      class="grid grid-cols-4 items-stretch w-full grid-flow-col-dense bg-surface-white shadow"
+      dir="rtl" >
+      <div class="flex h-full col-span-1">
+        
       <Sidebar
         :header="{
           title: 'جود النقل',
@@ -70,7 +74,8 @@
           },
         ]"
       />
-      <div class="w-full m-5">
+      </div>
+      <div class="flex h-full col-span-3 ">
         <slot></slot>
       </div>
     </div>
