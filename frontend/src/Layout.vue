@@ -2,10 +2,9 @@
   <div>
     <Navbar />
     <div
-      class="grid p-4 grid-cols-4 items-stretch h-screen w-full grid-flow-col-dense bg-surface-white shadow"
+      class="grid p-8 grid-cols-6 items-stretch h-screen w-full
+       bg-surface-white shadow"
       dir="rtl" >
-      <div class="h-full col-span-1">
-        
       <Sidebar
         :header="{
           title: 'جود النقل',
@@ -74,8 +73,8 @@
           },
         ]"
       />
-      </div>
-      <div class="h-full col-span-3 w-full">
+   
+      <div class="h-full col-span-5 w-full">
         <slot></slot>
       </div>
     </div>
