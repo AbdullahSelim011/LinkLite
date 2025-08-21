@@ -2,9 +2,9 @@
   <div>
     <Navbar />
     <div
-      class="grid grid-cols-4 items-stretch w-full grid-flow-col-dense bg-surface-white shadow"
+      class="grid p-4 grid-cols-4 items-stretch h-screen w-full grid-flow-col-dense bg-surface-white shadow"
       dir="rtl" >
-      <div class="flex h-full col-span-1">
+      <div class="h-full col-span-1">
         
       <Sidebar
         :header="{
@@ -75,7 +75,7 @@
         ]"
       />
       </div>
-      <div class="flex h-full col-span-3 ">
+      <div class="h-full col-span-3 w-full">
         <slot></slot>
       </div>
     </div>

@@ -752,4 +752,12 @@ def dashboard_data(*args, **kwargs):
         frappe.log_error(message=str(e), title="Dashboard data fetch error")
         api_response(501, "error", str(e))
 
-
+@frappe.whitelist(allow_guest=True)
+def get_drivers_data(*args, **kwargs):
+    try:
+        data = frappe.db.get_list("Driver", fields=["name", "full_name", "status"])
+        api_response(200, "success", data)
+    except Exception as e:
+        frappe.log_error(message=str(e), title="Drivers data fetch error")
+        api_response(501, "error", str(e))
+    
