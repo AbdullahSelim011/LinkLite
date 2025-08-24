@@ -106,6 +106,7 @@ def create_delivery_trip(departure_time, vehicle, driver, delivery_stops):
     """
     Creates a new Delivery Trip document.
     """
+    
     # 1. Validate inputs
     if not departure_time or not vehicle or not driver:
         frappe.throw(_("يجب إدخال جميع الحقول المطلوبة"))
@@ -316,58 +317,50 @@ def create_sales_invoice_custom(customer, items):
         return {"error": f"فشل إنشاء الفاتورة: {str(e)}"}
 
 @frappe.whitelist()
-def create_vehicle_custom(license_plate, make, model, last_odometer, fuel_type, uom, color=None):
+def create_vehicle_custom(license_plate, make, model, last_odometer, fuel_type, uom, wheels, color=None):
     """
-    إنشاء مستند مركبة (Vehicle) جديد مع التحقق من جميع البيانات الإلزامية.
-    
-    :param license_plate: رقم لوحة المركبة (string)
-    :param make: اسم الشركة المصنعة (string)
-    :param model: اسم طراز المركبة (string)
-    :param last_odometer: قراءة عداد المسافات (اجباري)
-    :param fuel_type: نوع الوقود (اجباري)
-    :param uom: وحدة قياس الوقود (اجباري)
-    :param color: لون المركبة (اختياري)
-    :return: dict يحتوي على رسالة النجاح أو الخطأ
+    إنشاء مستند مركبة (Vehicle) جديد
     """
     try:
-        # التحقق من جميع الحقول الإلزامية
+        # التحقق من الحقول الإلزامية
         if not license_plate:
             frappe.throw("رقم لوحة المركبة إلزامي.")
         if not make:
             frappe.throw("اسم الشركة المصنعة إلزامي.")
         if not model:
             frappe.throw("اسم طراز المركبة إلزامي.")
-        if not last_odometer:
+        if last_odometer is None or last_odometer == "":
             frappe.throw("قراءة عداد المسافات إلزامي.")
         if not fuel_type:
             frappe.throw("نوع الوقود إلزامي.")
         if not uom:
             frappe.throw("وحدة قياس الوقود إلزامي.")
+        if not wheels:
+            frappe.throw("عدد العجلات إلزامي.")
 
-        # إنشاء مستند المركبة
+        # إنشاء المستند
         vehicle_doc = frappe.get_doc({
             "doctype": "Vehicle",
+            "vehicle_name": f"{make} {model} ({license_plate})",
             "license_plate": license_plate,
             "make": make,
             "model": model,
             "color": color,
             "last_odometer": last_odometer,
             "fuel_type": fuel_type,
-            "uom": uom
+            "uom": uom,
+            "wheels": wheels
         })
 
-        # حفظ المستند
-        vehicle_doc.insert()
+        vehicle_doc.insert(ignore_permissions=True)
         frappe.db.commit()
 
         return {"message": "تم إنشاء المركبة بنجاح", "vehicle_name": vehicle_doc.name}
 
-    except frappe.ValidationError as e:
-        frappe.log_error(frappe.get_traceback(), "Error in create_vehicle_custom")
-        return {"error": str(e)}
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Error in create_vehicle_custom")
-        return {"error": f"فشل إنشاء المركبة: {str(e)}"}
+        frappe.throw(f"فشل إنشاء المركبة: {str(e)}")
+
     
 @frappe.whitelist()
 def delete_driver(name):
@@ -428,19 +421,19 @@ def create_driver_custom(full_name, status):
         frappe.log_error(frappe.get_traceback(), "Error in create_driver_custom")
         return {"error": f"فشل إنشاء السائق: {str(e)}"}
 
-
 @frappe.whitelist()
-def create_customer(customer_data):
+def create_customer(**kwargs):
     """Create a new customer"""
     try:
-        # Validate required fields
+        # Parse data (already dict because of **kwargs)
+        customer_data = kwargs
+
         if not customer_data.get("customer_name"):
             frappe.throw(_("Customer Name is required"))
         
         if not customer_data.get("customer_type"):
             frappe.throw(_("Customer Type is required"))
         
-        # Create new customer doc
         customer = frappe.new_doc("Customer")
         customer.update({
             "customer_name": customer_data.get("customer_name"),
@@ -458,6 +451,7 @@ def create_customer(customer_data):
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), _("Failed to create customer"))
         frappe.throw(_("Failed to create customer. Error: {0}").format(str(e)))
+
         
 @frappe.whitelist()
 def delete_customer(customer_name):

@@ -345,6 +345,7 @@ const createVehicle = () => {
       last_odometer: newVehicle.last_odometer,
       fuel_type: newVehicle.fuel_type,
       uom: newVehicle.uom,
+      wheels: newVehicle.wheels,
       color: newVehicle.color
     },
     onSuccess() {
