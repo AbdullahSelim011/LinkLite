@@ -9,14 +9,14 @@
         :header="{
           title: 'جود النقل',
           logo: '/src/assets/logo.png',
-          menuItems: [
-            {
-              label: 'تبديل الثيم',
-              icon: Moon,
-              iconClass: 'luxury-icon',
-              onClick: toggleTheme,
-            },
-          ],
+          // menuItems: [
+          //   {
+          //     label: 'تبديل الثيم',
+          //     icon: Moon,
+          //     iconClass: 'luxury-icon',
+          //     onClick: toggleTheme,
+          //   },
+          // ],
         }"
         :sections="[
           {

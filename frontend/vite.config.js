@@ -6,10 +6,9 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [
     frappeui({
-    //   frappeProxy: {
-    //     target: 'http://127.0.0.1:8002', // your frappe backend
-    //   },
-      // frappeProxy: true,
+      // frappeProxy: {
+      //   target: 'http://127.0.0.1:8002', // your frappe backend
+      // },
       jinjaBootData: true,
       lucideIcons: true,
       buildConfig: {
