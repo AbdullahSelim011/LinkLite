@@ -596,7 +596,7 @@ onMounted(() => {
 
 
 function fetchTripDetails(tripName) {
-  console.log("✅ Fetching trip:", tripName)
+
 
   const resource = createResource({
     url: "frappe.client.get",
@@ -605,7 +605,6 @@ function fetchTripDetails(tripName) {
       name: tripName,
     },
     onSuccess(data) {
-      console.log("✅ Trip details fetched:", data)
       selectedTrip.value = data
       showSidebar.value = true
     },

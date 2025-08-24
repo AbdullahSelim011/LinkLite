@@ -163,7 +163,7 @@
                     label="عرض"
                     icon-left="eye"
                     appearance="minimal"
-                    @click="viewInvoice(invoice.name)"
+                    @click="fetchInvoiceDetails(invoice.name)"
                   />
 
                   <Button
@@ -250,12 +250,21 @@
       </div>
     </div>
   </div>
+  <Sidebar2
+    v-if="showInvoiceSidebar"
+    :record="selectedInvoice"
+    title="تفاصيل الفاتورة"
+    :visible="showInvoiceSidebar"
+    @close="showInvoiceSidebar = false"
+  />
+
+
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
 import { createResource } from 'frappe-ui';
-
+import Sidebar2 from "@/components/Sidebar2.vue"
 // البيانات
 const invoices = ref([]);
 const customers = ref([]);
@@ -269,6 +278,9 @@ const isDeleting = ref(false);
 const error = ref(null);
 const successMessage = ref('');
 const showCreateForm = ref(false);
+// state for sidebar
+const selectedInvoice = ref(null)
+const showInvoiceSidebar = ref(false)
 
 const newInvoice = reactive({
   customer: "",
@@ -556,6 +568,28 @@ onMounted(() => {
   fetchCustomers();
   fetchItems();
 });
+
+function fetchInvoiceDetails(invoiceName) {
+
+
+  const resource = createResource({
+    url: "frappe.client.get",
+    params: {
+      doctype: "Sales Invoice",
+      name: invoiceName,
+    },
+    onSuccess(data) {
+      selectedInvoice.value = data
+      showInvoiceSidebar.value = true
+    },
+    onError(err) {
+      console.error("❌ Error fetching invoice:", err)
+    },
+  })
+
+  resource.fetch()
+}
+
 </script>
 
 <style scoped>
