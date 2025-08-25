@@ -106,13 +106,10 @@ export default {
                     username: email.value,
                     password: password.value
                 })
-
-                // If successful, redirect or handle as needed
                 console.log('Login successful')
-                // You might want to redirect or update app state here
-                router.push('/dashboard')
+                // router.push('/dashboard')
             } catch (error) {
-                console.error('Login error:', error)
+                console.log('Login error:', error)
                 errorMessage.value = error.message || 'Login failed. Please check your credentials.'
             } finally {
                 loading.value = false

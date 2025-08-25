@@ -198,8 +198,8 @@
 
   <Sidebar v-if="showSidebar" :record="selectedTrip" title="تفاصيل الرحلة" @close="showSidebar = false" />
 
-  <DeleveryTripDetailsModal v-if="showDetailsModal" :record="selectedTrip" title="تفاصيل الرحلة"
-    @close="showDetailsModal = false" />
+  <!-- <DeleveryTripDetailsModal v-if="showDetailsModal" :record="selectedTrip" title="تفاصيل الرحلة"
+    @close="showDetailsModal = false" /> -->
 
 </template>
 

@@ -10,7 +10,7 @@ onMounted(() => {
         languages: ["ar", "en", "fr"],
         default_language: "ar",
         flag_style: "3d",
-        switcher_horizontal_position: 'left',
+        switcher_horizontal_position: 'right',
         switcher_vertical_position: 'top',
 
 
