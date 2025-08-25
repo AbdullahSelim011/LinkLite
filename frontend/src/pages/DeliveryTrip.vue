@@ -4,23 +4,14 @@
   </div>
 
   <div class="flex justify-between items-center mb-4">
-    <Button
-      :label="showCreateForm ? 'إخفاء النموذج' : 'إضافة رحلة جديدة'"
-      :icon-left="showCreateForm ? 'x' : 'plus'"
-      @click="showCreateForm = !showCreateForm"
-    />
+    <Button :label="showCreateForm ? 'إخفاء النموذج' : 'إضافة رحلة جديدة'" :icon-left="showCreateForm ? 'x' : 'plus'"
+      @click="showCreateForm = !showCreateForm"></Button>
 
     <div class="relative w-72">
-      <input
-        v-model="searchQuery"
-        type="text"
+      <input v-model="searchQuery" type="text"
         class="w-full pr-4 pl-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="ابحث في الرحلات..."
-      />
-      <button
-        class="absolute left-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700"
-        @click="fetchTrips"
-      >
+        placeholder="ابحث في الرحلات..." />
+      <button class="absolute left-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700" @click="fetchTrips">
         <i class="fas fa-search"></i>
       </button>
     </div>
@@ -33,21 +24,14 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">وقت المغادرة</label>
-          <input
-            v-model="newTrip.departure_time"
-            type="datetime-local"
-            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          <input v-model="newTrip.departure_time" type="datetime-local"
+            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">المركبة</label>
-          <select
-            v-model="newTrip.vehicle"
-            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          >
+          <select v-model="newTrip.vehicle"
+            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             <option value="" disabled>اختر المركبة</option>
             <option v-for="vehicle in vehicles" :key="vehicle.name" :value="vehicle.name">
               {{ vehicle.license_plate || vehicle.name }}
@@ -57,11 +41,8 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">السائق</label>
-          <select
-            v-model="newTrip.driver"
-            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          >
+          <select v-model="newTrip.driver"
+            class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             <option value="" disabled>اختر السائق</option>
             <option v-for="driver in drivers" :key="driver.name" :value="driver.name">
               {{ driver.full_name || driver.name }}
@@ -71,25 +52,13 @@
 
         <div class="col-span-2">
           <h5 class="font-medium mb-2">توقفات التوصيل:</h5>
-          <div
-            v-for="(stop, index) in newTrip.delivery_stops"
-            :key="index"
-            class="grid grid-cols-12 gap-3 mb-3"
-          >
+          <div v-for="(stop, index) in newTrip.delivery_stops" :key="index" class="grid grid-cols-12 gap-3 mb-3">
             <div class="col-span-10 md:col-span-5">
               <label class="block text-sm font-medium text-gray-700 mb-1">العميل</label>
-              <select
-                v-model="stop.customer"
-                @change="loadCustomerAddresses(stop)"
-                class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
+              <select v-model="stop.customer" @change="loadCustomerAddresses(stop)"
+                class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 <option value="" disabled>اختر العميل</option>
-                <option
-                  v-for="customer in customers"
-                  :key="customer.name"
-                  :value="customer.name"
-                >
+                <option v-for="customer in customers" :key="customer.name" :value="customer.name">
                   {{ customer.customer_name || customer.name }}
                 </option>
               </select>
@@ -97,16 +66,10 @@
 
             <div class="col-span-10 md:col-span-5">
               <label class="block text-sm font-medium text-gray-700 mb-1">العنوان</label>
-              <select
-                v-model="stop.address"
-                class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
+              <select v-model="stop.address"
+                class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="" disabled>اختر العنوان</option>
-                <option
-                  v-for="address in stop.addresses || []"
-                  :key="address.name"
-                  :value="address.name"
-                >
+                <option v-for="address in stop.addresses || []" :key="address.name" :value="address.name">
                   {{ address.address_title || address.name }}
                 </option>
               </select>
@@ -117,22 +80,13 @@
             </div>
           </div>
 
-          <Button
-            label="إضافة توقف"
-            icon-left="plus"
-            appearance="minimal"
-            @click="addStop"
-          />
+          <Button label="إضافة توقف" icon-left="plus" appearance="minimal" @click="addStop" />
         </div>
 
         <div class="col-span-2 flex justify-end space-x-2">
           <Button label="إعادة تعيين" appearance="secondary" @click="resetTripForm" />
-          <Button
-            :label="isCreating ? 'جاري الإضافة...' : 'إضافة الرحلة'"
-            :icon-left="isCreating ? 'loader' : 'plus'"
-            :loading="isCreating"
-            type="submit"
-          />
+          <Button :label="isCreating ? 'جاري الإضافة...' : 'إضافة الرحلة'" :icon-left="isCreating ? 'loader' : 'plus'"
+            :loading="isCreating" type="submit" />
         </div>
       </div>
     </form>
@@ -143,39 +97,25 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               رقم الرحلة
             </th>
-            <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               وقت المغادرة
             </th>
-            <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               المركبة
             </th>
-            <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               السائق
             </th>
-            <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               عدد التوقفات
             </th>
-            <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               الحالة
             </th>
-            <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               الإجراءات
             </th>
           </tr>
@@ -202,39 +142,16 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex flex-wrap gap-2 justify-end">
-                <Button
-                  label="عرض"
-                  icon-left="eye"
-                  appearance="minimal"
-                  @click="fetchTripDetails(trip.name)"
-                />
+                <Button label="عرض" icon-left="eye" appearance="minimal" @click="fetchTripDetails(trip.name)" />
 
-                <Button
-                  v-if="trip.status === 'Draft'"
-                  label="ترحيل"
-                  icon-left="check"
-                  appearance="minimal"
-                  :loading="isSubmitting"
-                  @click="submitTrip(trip.name)"
-                />
+                <Button v-if="trip.status === 'Draft'" label="ترحيل" icon-left="check" appearance="minimal"
+                  :loading="isSubmitting" @click="submitTrip(trip.name)" />
 
-                <Button
-                  v-if="trip.status !== 'Cancelled' && trip.docstatus === 1"
-                  label="إلغاء"
-                  icon-left="ban"
-                  appearance="minimal"
-                  :loading="isCancelling"
-                  @click="cancelTrip(trip.name)"
-                />
+                <Button v-if="trip.status !== 'Cancelled' && trip.docstatus === 1" label="إلغاء" icon-left="ban"
+                  appearance="minimal" :loading="isCancelling" @click="cancelTrip(trip.name)" />
 
-                <Button
-                  v-if="trip.status === 'Draft' || trip.status === 'Cancelled'"
-                  label="حذف"
-                  icon-left="trash-2"
-                  appearance="minimal"
-                  :loading="isDeleting"
-                  @click="deleteTrip(trip.name)"
-                />
+                <Button v-if="trip.status === 'Draft' || trip.status === 'Cancelled'" label="حذف" icon-left="trash-2"
+                  appearance="minimal" :loading="isDeleting" @click="deleteTrip(trip.name)" />
               </div>
             </td>
           </tr>
@@ -249,16 +166,11 @@
   </div>
 
   <div v-if="isLoading" class="text-center my-8 py-8">
-    <div
-      class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-    ></div>
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
     <h5 class="mt-3 text-gray-600">جاري تحميل الرحلات...</h5>
   </div>
 
-  <div
-    v-if="error"
-    class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mt-4 rounded"
-  >
+  <div v-if="error" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mt-4 rounded">
     <div class="flex justify-between items-center">
       <div class="flex items-center">
         <i class="fas fa-exclamation-triangle ml-2"></i>
@@ -270,10 +182,7 @@
     </div>
   </div>
 
-  <div
-    v-if="successMessage"
-    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4 rounded"
-  >
+  <div v-if="successMessage" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4 rounded">
     <div class="flex justify-between items-center">
       <div class="flex items-center">
         <i class="fas fa-check-circle ml-2"></i>
@@ -285,21 +194,19 @@
     </div>
   </div>
 
-    <!-- Sidebar -->
+  <!-- Sidebar -->
 
-    <Sidebar
-      v-if="showSidebar"
-      :record="selectedTrip"
-      title="تفاصيل الرحلة"
-      @close="showSidebar = false"
-    />
+  <Sidebar v-if="showSidebar" :record="selectedTrip" title="تفاصيل الرحلة" @close="showSidebar = false" />
+
+  <DeleveryTripDetailsModal v-if="showDetailsModal" :record="selectedTrip" title="تفاصيل الرحلة"
+    @close="showDetailsModal = false" />
 
 </template>
 
 <script setup>
 import { createResource } from 'frappe-ui';
 import { ref, reactive, computed, onMounted } from 'vue';
-
+import { frappe } from '@/plugins/frappe'
 const trips = ref([]);
 const vehicles = ref([]);
 const drivers = ref([]);
@@ -311,11 +218,12 @@ const isSubmitting = ref(false);
 const isCancelling = ref(false);
 const isDeleting = ref(false);
 const error = ref(null);
-
+const call = frappe.call()
 const successMessage = ref('');
 const showCreateForm = ref(false);
 
 import Sidebar from "@/components/Sidebar.vue"
+import DeleveryTripDetailsModal from "@/components/deleveryTrip/DeleveryTripDetailsModal.vue"
 
 const deliveryTrips = ref([])
 const selectedTrip = ref({})
@@ -401,7 +309,7 @@ const loadCustomerAddresses = async (stop) => {
       url: 'linklite.api.get_customer_addresses',
       params: { customer: stop.customer },
     });
-    
+
     const data = await resource.fetch();
     stop.addresses = data || [];
     stop.address = ''; // Reset address selection
@@ -411,20 +319,18 @@ const loadCustomerAddresses = async (stop) => {
   }
 };
 
-const fetchTrips = () => {
-  isLoading.value = true;
-  const resource = createResource({
-    url: 'linklite.api.get_delivery_trips',
-    onSuccess(data) {
-      trips.value = data;
-    },
-    onError(err) {
-      error.value = err.message;
-    },
-  });
-  resource.fetch().finally(() => {
+const fetchTrips = async () => {
+  try {
+    const res = await call.get("linklite.api.get_delivery_trips");
+    console.log(res);
+    trips.value = res.message;
+  } catch (error) {
+    console.log(error);
+    error.value = error.message || 'حدث خطأ أثناء تحميل الرحلات';
+  } finally {
     isLoading.value = false;
-  });
+  }
+
 };
 
 const fetchDependencies = () => {
@@ -473,8 +379,8 @@ const createTrip = () => {
     return;
   }
 
-  if (newTrip.delivery_stops.length === 0 || 
-      newTrip.delivery_stops.some(stop => !stop.customer)) {
+  if (newTrip.delivery_stops.length === 0 ||
+    newTrip.delivery_stops.some(stop => !stop.customer)) {
     error.value = "يجب إدخال عميل لكل توقف";
     isCreating.value = false;
     return;
@@ -482,7 +388,7 @@ const createTrip = () => {
 
   const resource = createResource({
     url: 'linklite.api.create_delivery_trip',
-    params: { 
+    params: {
       departure_time: newTrip.departure_time,
       vehicle: newTrip.vehicle,
       driver: newTrip.driver,
@@ -501,7 +407,7 @@ const createTrip = () => {
       error.value = err.message;
     },
   });
-  
+
   resource.fetch().finally(() => {
     isCreating.value = false;
   });
@@ -595,9 +501,7 @@ onMounted(() => {
 });
 
 
-function fetchTripDetails(tripName) {
-
-
+async function fetchTripDetails(tripName) {
   const resource = createResource({
     url: "frappe.client.get",
     params: {
@@ -658,6 +562,7 @@ td {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

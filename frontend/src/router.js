@@ -43,6 +43,11 @@ const routes = [
     name: 'Dashboard',
     component: () => import('@/pages/Dashboard.vue'),
   },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/pages/Login.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -52,6 +57,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   let isLoggedIn = session.isLoggedIn
+  console.log(isLoggedIn)
   try {
     await userResource.promise
   } catch (error) {
@@ -59,7 +65,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.name === 'Login' && isLoggedIn) {
-    next({ name: '/Home' })
+    next({ name: 'Home' })
   } else if (to.name !== 'Login' && !isLoggedIn) {
     window.location.href = '/login'
   } else {

@@ -100,7 +100,7 @@
 defineProps({
   record: { type: Object, default: null },
   title: { type: String, default: 'Details' },
-  fields: { type: Array, default: null }, // optional
+  fields: { type: Array, default: null },
 })
 </script>
 

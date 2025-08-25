@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BarChart: typeof import('./src/components/charts/BarChart.vue')['default']
+    DeleveryTripDetailsModal: typeof import('./src/components/deleveryTrip/DeleveryTripDetailsModal.vue')['default']
     DoughnutChart: typeof import('./src/components/charts/DoughnutChart.vue')['default']
     GTranslation: typeof import('./src/components/GTranslation.vue')['default']
     LineChart: typeof import('./src/components/charts/LineChart.vue')['default']

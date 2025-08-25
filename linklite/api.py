@@ -240,6 +240,8 @@ def cancel_sales_invoice(name):
         frappe.db.rollback()
         frappe.log_error(frappe.get_traceback(), "Error in cancel_sales_invoice")
         return {"error": f"فشل إلغاء الفاتورة: {str(e)}"}
+
+
 # frappe.client.delete_sales_invoice
 @frappe.whitelist()
 def delete_sales_invoice(name):
@@ -573,6 +575,7 @@ def get_counts():
 # ######################################################### #
 # Dashboard API - mostafa kadry
 # ######################################################### #
+
 import frappe
 from frappe.utils import get_first_day, get_last_day, nowdate
 
