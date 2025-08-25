@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'page-shrink': showInvoiceSidebar }">
     <h2 class="font-bold text-ink-gray-8">فواتير المبيعات</h2>
 
     <div class="flex justify-between items-center mb-4">
@@ -249,22 +249,22 @@
         </button>
       </div>
     </div>
+
+    <Sidebar2
+      v-if="showInvoiceSidebar"
+      :record="selectedInvoice"
+      title="تفاصيل الفاتورة"
+      :visible="showInvoiceSidebar"
+      @close="showInvoiceSidebar = false"
+    />
   </div>
-  <Sidebar2
-    v-if="showInvoiceSidebar"
-    :record="selectedInvoice"
-    title="تفاصيل الفاتورة"
-    :visible="showInvoiceSidebar"
-    @close="showInvoiceSidebar = false"
-  />
-
-
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
 import { createResource } from 'frappe-ui';
 import Sidebar2 from "@/components/Sidebar2.vue"
+
 // البيانات
 const invoices = ref([]);
 const customers = ref([]);
@@ -570,8 +570,6 @@ onMounted(() => {
 });
 
 function fetchInvoiceDetails(invoiceName) {
-
-
   const resource = createResource({
     url: "frappe.client.get",
     params: {
@@ -611,6 +609,12 @@ td {
   text-align: right;
 }
 
+/* Page shrink effect when sidebar is visible */
+.page-shrink {
+  margin-left: 400px;
+  transition: margin-right 0.3s ease;
+}
+
 /* Loading spinner animation */
 .animate-spin {
   animation: spin 1s linear infinite;
@@ -631,6 +635,10 @@ td {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
+  }
+  
+  .page-shrink {
+    margin-right: 0;
   }
 }
 

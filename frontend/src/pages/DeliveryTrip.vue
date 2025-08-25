@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div :class="{ 'page-shrink': showSidebar }">
     <h2 class="font-bold text-ink-gray-8">إدارة رحلات التوصيل</h2>
-  </div>
+
 
   <div class="flex justify-between items-center mb-4">
     <Button :label="showCreateForm ? 'إخفاء النموذج' : 'إضافة رحلة جديدة'" :icon-left="showCreateForm ? 'x' : 'plus'"
@@ -196,11 +196,13 @@
 
   <!-- Sidebar -->
 
-  <Sidebar v-if="showSidebar" :record="selectedTrip" title="تفاصيل الرحلة" @close="showSidebar = false" />
-
-  <!-- <DeleveryTripDetailsModal v-if="showDetailsModal" :record="selectedTrip" title="تفاصيل الرحلة"
-    @close="showDetailsModal = false" /> -->
-
+    <Sidebar
+      v-if="showSidebar"
+      :record="selectedTrip"
+      title="تفاصيل الرحلة"
+      @close="showSidebar = false"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -551,6 +553,12 @@ td {
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
+}
+
+/* Page shrink effect when sidebar is visible */
+.page-shrink {
+  margin-left: 400px;
+  transition: margin-right 0.3s ease;
 }
 
 /* Loading spinner animation */
